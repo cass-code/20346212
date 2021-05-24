@@ -1,0 +1,86 @@
+---
+title: "Why I am always right about movies"
+output: pdf_document
+
+---
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width = 6, fig.height = 5)
+
+options(dplyr.summarise.inform=F)
+
+if(!require("tidyverse")) install.packages("tidyverse")
+library(tidyverse)
+library(knitr)
+
+list.files('code/', full.names = T, recursive = T) %>% as.list() %>% walk(~source(.))
+
+# Data loading:
+    Loc <- "data/Movies/"
+    movies <- read_csv(glue::glue("{Loc}Movies.csv"))
+
+
+```
+
+
+# Overview
+
+In this report, we look at movies and why my friend is mostly wrong.
+
+## Rotten Tomatoes vs audience scores
+
+If we look at the audience scores compared to ROtten Tomatoes, we see that the frequency 
+
+```{r}
+ right <- freq(movies)
+
+ kable(right)
+```
+In general we can see that the audience and Rotten Tomatoes tend to score in the same range for the same movie: 
+
+```{r}
+g <-plot_movies(movies, xaxis_size = 5, xaxis_rows = 3)
+g
+
+```
+
+
+### Profitability
+
+
+If we calculate the average profitability of all the studios, we see that Disney has the highest average.
+```{r,  warning =  FALSE}
+
+profit <-  profitability(movies)
+
+kable(profit)
+
+
+```
+If we look at worlwide gross however, we see that Disney doesn't fair too badly, even though it is not the top.
+```{r}
+gross <- worldgross(movies)
+kable(gross)
+```
+
+## Correlation
+
+Using the Spearman's corrlation test we can see that the correlation between world wide gross and audience score is in fact 29% which is far below 80%.
+
+```{r}
+corr <- cor.test(x=movies$`Audience  score %`, y=movies$`Worldwide Gross`, method = 'spearman', exact = FALSE)
+print(corr)
+
+```
+
+We could get a basic view from a scatter plot. Since the points are far from one another, we could already surmise that the correlation is weak.
+
+```{r}
+g <-corr_plot(movies, xaxis_size = 5, xaxis_rows = 3)
+g
+
+```
+
+
+
+
